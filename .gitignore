@@ -109,6 +109,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.creditcard_venv
+creditcard_venv/
 
 # Spyder project settings
 .spyderproject
