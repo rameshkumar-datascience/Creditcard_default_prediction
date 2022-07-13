@@ -1,5 +1,7 @@
+gunicorn
 numpy
 pandas
 matplotlib
 Flask
 sklearn
+-e .
