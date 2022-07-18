@@ -1,6 +1,7 @@
 gunicorn
 numpy
 pandas
+PyYAML
 matplotlib
 Flask
 sklearn

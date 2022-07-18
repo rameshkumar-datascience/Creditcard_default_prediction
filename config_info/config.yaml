@@ -1,0 +1,11 @@
+training_pipeline_config:
+  pipeline_name: creditcard
+  artifact_dir: artifact
+
+data_ingestion_config:
+  dataset_download_url: https://raw.githubusercontent.com/rameshkumar-datascience/datasets/main/creditcard.zip
+  zip_data_dir: zip_data
+  raw_data_dir: raw_data
+  ingested_dir: ingested_data
+  ingested_train_dir: train
+  ingested_test_dir: test
