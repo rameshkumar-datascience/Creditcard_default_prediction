@@ -3,5 +3,7 @@ from creditcard.pipeline.pipeline import Pipeline
 
 conf=Configuration()
 
+#check=conf.get_data_transformation_config()
+#print(check)
 pipe = Pipeline(conf)
-pipe.start_data_ingestion()
+pipe.run_pipeline()

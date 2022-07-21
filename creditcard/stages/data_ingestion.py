@@ -17,6 +17,7 @@ class DataIngestion():
             raise CreditcardException(e,sys) from e
     def download_credicard_dataset(self)->str:
         try:
+            logging.info(f"{'<<'*15} Data Ingestion log started {'<<'*15}")
             #getting download url from dataingestion config object
             download_url=self.data_ingestion_config.dataset_download_url
 
@@ -35,6 +36,7 @@ class DataIngestion():
 
             return zip_file_path
         except Exception as e:
+            logging.info(f"Unable to download the file from given url:[{download_url}] Check internet connection")
             raise CreditcardException(e,sys) from e
 
     def extract_zip_file(self,zip_file_path:str):
@@ -95,11 +97,14 @@ class DataIngestion():
             is_ingested=True,
             message=f"Data ingestion completed successfully."
             )
-
+            logging.info(f"{'<<'*15} Data Ingestion log completed {'<<'*15}")
+            return data_ingestion_artifact
         except Exception as e:
             raise CreditcardException(e,sys) from e
 
-    #All above functions included in below function
+
+
+    #----------------------All in one function--------------------------#
     def initiate_dataingestion_stage(self)->DataIngestionArtifact:
         try:
             zip_file_path = self.download_credicard_dataset()
