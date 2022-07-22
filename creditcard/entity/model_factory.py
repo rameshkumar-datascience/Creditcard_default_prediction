@@ -10,6 +10,7 @@ from collections import namedtuple
 from typing import List
 from creditcard.logger import logging
 from sklearn.metrics import r2_score,mean_squared_error
+from sklearn.metrics import fbeta_score,f1_score
 
 
 
@@ -37,16 +38,12 @@ BestModel = namedtuple("BestModel", ["model_serial_number",
                                      "best_score", ])
 
 MetricInfoArtifact = namedtuple("MetricInfoArtifact",
-                                ["model_name", "model_object", "train_rmse", "test_rmse", "train_accuracy",
+                                ["model_name", "model_object","train_accuracy",
                                  "test_accuracy", "model_accuracy", "index_number"])
 
 
 
-def evaluate_classification_model(model_list: list, X_train:np.ndarray, y_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, base_accuracy:float=0.6)->MetricInfoArtifact:
-    pass
-
-
-def evaluate_regression_model(model_list: list, X_train:np.ndarray, y_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, base_accuracy:float=0.6) -> MetricInfoArtifact:
+def evaluate_classification_model(model_list: list, X_train:np.ndarray, y_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, base_accuracy:float=0.5)->MetricInfoArtifact:
     """
     Description:
     This function compare multiple regression model return best model
@@ -64,8 +61,6 @@ def evaluate_regression_model(model_list: list, X_train:np.ndarray, y_train:np.n
                                  "test_accuracy", "model_accuracy", "index_number"])
     """
     try:
-        
-    
         index_number = 0
         metric_info_artifact = None
         for model in model_list:
@@ -77,13 +72,9 @@ def evaluate_regression_model(model_list: list, X_train:np.ndarray, y_train:np.n
             y_test_pred = model.predict(X_test)
 
             #Calculating r squared score on training and testing dataset
-            train_acc = r2_score(y_train, y_train_pred)
-            test_acc = r2_score(y_test, y_test_pred)
+            train_acc = f1_score(y_train, y_train_pred)
+            test_acc = f1_score(y_test, y_test_pred)
             
-            #Calculating mean squared error on training and testing dataset
-            train_rmse = np.sqrt(mean_squared_error(y_train, y_train_pred))
-            test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
-
             # Calculating harmonic mean of train_accuracy and test_accuracy
             model_accuracy = (2 * (train_acc * test_acc)) / (train_acc + test_acc)
             diff_test_train_acc = abs(test_acc - train_acc)
@@ -95,18 +86,13 @@ def evaluate_regression_model(model_list: list, X_train:np.ndarray, y_train:np.n
 
             logging.info(f"{'>>'*30} Loss {'<<'*30}")
             logging.info(f"Diff test train accuracy: [{diff_test_train_acc}].") 
-            logging.info(f"Train root mean squared error: [{train_rmse}].")
-            logging.info(f"Test root mean squared error: [{test_rmse}].")
-
 
             #if model accuracy is greater than base accuracy and train and test score is within certain thershold
             #we will accept that model as accepted model
-            if model_accuracy >= base_accuracy and diff_test_train_acc < 0.05:
+            if model_accuracy >= base_accuracy and diff_test_train_acc < 0.2:
                 base_accuracy = model_accuracy
                 metric_info_artifact = MetricInfoArtifact(model_name=model_name,
                                                         model_object=model,
-                                                        train_rmse=train_rmse,
-                                                        test_rmse=test_rmse,
                                                         train_accuracy=train_acc,
                                                         test_accuracy=test_acc,
                                                         model_accuracy=model_accuracy,
@@ -118,8 +104,7 @@ def evaluate_regression_model(model_list: list, X_train:np.ndarray, y_train:np.n
             logging.info(f"No model found with higher accuracy than base accuracy")
         return metric_info_artifact
     except Exception as e:
-        raise HousingException(e, sys) from e
-
+        raise CreditcardException(e, sys) from e
 
 def get_sample_model_config_yaml_file(export_dir: str):
     try:
@@ -154,7 +139,7 @@ def get_sample_model_config_yaml_file(export_dir: str):
             yaml.dump(model_config, file)
         return export_file_path
     except Exception as e:
-        raise HousingException(e, sys)
+        raise CreditcardException(e, sys)
 
 
 class ModelFactory:
@@ -172,7 +157,7 @@ class ModelFactory:
             self.grid_searched_best_model_list = None
 
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     @staticmethod
     def update_property_of_class(instance_ref:object, property_data: dict):
@@ -185,7 +170,7 @@ class ModelFactory:
                 setattr(instance_ref, key, value)
             return instance_ref
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     @staticmethod
     def read_params(config_path: str) -> dict:
@@ -194,7 +179,7 @@ class ModelFactory:
                 config:dict = yaml.safe_load(yaml_file)
             return config
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     @staticmethod
     def class_for_name(module_name:str, class_name:str):
@@ -206,7 +191,7 @@ class ModelFactory:
             class_ref = getattr(module, class_name)
             return class_ref
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     def execute_grid_search_operation(self, initialized_model: InitializedModelDetail, input_feature,
                                       output_feature) -> GridSearchedBestModel:
@@ -247,7 +232,7 @@ class ModelFactory:
             
             return grid_searched_best_model
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     def get_initialized_model_list(self) -> List[InitializedModelDetail]:
         """
@@ -283,7 +268,7 @@ class ModelFactory:
             self.initialized_model_list = initialized_model_list
             return self.initialized_model_list
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     def initiate_best_parameter_search_for_initialized_model(self, initialized_model: InitializedModelDetail,
                                                              input_feature,
@@ -303,7 +288,7 @@ class ModelFactory:
                                                       input_feature=input_feature,
                                                       output_feature=output_feature)
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     def initiate_best_parameter_search_for_initialized_models(self,
                                                               initialized_model_list: List[InitializedModelDetail],
@@ -321,7 +306,7 @@ class ModelFactory:
                 self.grid_searched_best_model_list.append(grid_searched_best_model)
             return self.grid_searched_best_model_list
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     @staticmethod
     def get_model_detail(model_details: List[InitializedModelDetail],
@@ -334,7 +319,7 @@ class ModelFactory:
                 if model_data.model_serial_number == model_serial_number:
                     return model_data
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     @staticmethod
     def get_best_model_from_grid_searched_best_model_list(grid_searched_best_model_list: List[GridSearchedBestModel],
@@ -353,7 +338,7 @@ class ModelFactory:
             logging.info(f"Best model: {best_model}")
             return best_model
         except Exception as e:
-            raise HousingException(e, sys) from e
+            raise CreditcardException(e, sys) from e
 
     def get_best_model(self, X, y,base_accuracy=0.6) -> BestModel:
         try:
@@ -368,4 +353,4 @@ class ModelFactory:
             return ModelFactory.get_best_model_from_grid_searched_best_model_list(grid_searched_best_model_list,
                                                                                   base_accuracy=base_accuracy)
         except Exception as e:
-            raise HousingException(e, sys)
+            raise CreditcardException(e, sys)

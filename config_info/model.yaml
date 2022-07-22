@@ -6,19 +6,45 @@ grid_search:
     verbose: 2
 model_selection:
   module_0:
-    class: LinearRegression
+    class: LogisticRegression
     module: sklearn.linear_model
     params:
+      penalty: l2
+      C: 1.0
       fit_intercept: true
     search_param_grid:
+      C:
+      - 5.0
+      - 7.0
+      - 10
+      - 20
+      - 40
       fit_intercept:
       - true
       - false
   module_1:
-    class: RandomForestRegressor
-    module: sklearn.ensemble
+    class: DecisionTreeClassifier
+    module: sklearn.tree
     params:
+      criterion: entropy
       min_samples_leaf: 3
     search_param_grid:
       min_samples_leaf:
       - 6
+      - 8
+      - 9
+      criterion:
+      - 'gini'
+  module_2:
+    class: RandomForestClassifier
+    module: sklearn.ensemble
+    params:
+      criterion: entropy
+      min_samples_leaf: 3
+    search_param_grid:
+      min_samples_leaf:
+      - 6
+      - 8
+      - 9
+      criterion:
+      - 'gini'

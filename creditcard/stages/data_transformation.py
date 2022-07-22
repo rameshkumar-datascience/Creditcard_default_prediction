@@ -9,11 +9,10 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
-from creditcard.util.util import read_yaml_file,save_preprocessed_object
+from creditcard.util.util import read_yaml_file,save_numpy_array_data, save_object
 from creditcard.contants import *
 import pandas as pd
 import numpy as np
-from creditcard.util.util import save_numpy_array_data, save_object
 
 
 
