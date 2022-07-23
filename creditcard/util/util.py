@@ -3,7 +3,8 @@ from creditcard.contants import *
 from creditcard.logger import logging
 from creditcard.exception import CreditcardException
 import sys
-import dill
+#import dill
+import pickle
 import numpy as np
 import pandas as pd
 
@@ -69,7 +70,7 @@ def save_object(file_path:str,obj):
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)
         with open(file_path, "wb") as file_obj:
-            dill.dump(obj, file_obj)
+            pickle.dump(obj, file_obj)
     except Exception as e:
         raise CreditcardException(e,sys) from e
 
@@ -80,7 +81,7 @@ def load_object(file_path:str):
     """
     try:
         with open(file_path, "rb") as file_obj:
-            return dill.load(file_obj)
+            return pickle.load(file_obj)
     except Exception as e:
         raise CreditcardException(e,sys) from e
 
