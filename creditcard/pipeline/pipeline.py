@@ -6,8 +6,11 @@ from creditcard.stages.data_ingestion import DataIngestion
 from creditcard.stages.data_validation import DataValidation
 from creditcard.stages.data_transformation import DataTransformation
 from creditcard.stages.model_trainer import ModelTrainer
+from creditcard.stages.model_evaluation import ModelEvaluation
+from creditcard.stages.model_pusher import ModelPusher
 from creditcard.entity.config_entity import DataIngestionConfig, DataValidationConfig,DataTransformationConfig
-from creditcard.entity.artifact_config import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact,ModelTrainerArtifact
+from creditcard.entity.artifact_config import DataIngestionArtifact,DataValidationArtifact, \
+DataTransformationArtifact, ModelTrainerArtifact, ModelEvaluationArtifact, ModelPusherArtifact
 
 
 

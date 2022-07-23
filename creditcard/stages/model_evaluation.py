@@ -32,8 +32,7 @@ class ModelEvaluation:
             model_evaluation_file_path = self.model_evaluation_config.model_evaluation_file_path
 
             if not os.path.exists(model_evaluation_file_path):
-                write_yaml_file(file_path=model_evaluation_file_path,
-                                )
+                write_yaml_file(file_path=model_evaluation_file_path)
                 return model
             model_eval_file_content = read_yaml_file(file_path=model_evaluation_file_path)
 
