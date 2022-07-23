@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import cross_origin,CORS
 import sys
 import pip
 from creditcard.util.util import read_yaml_file, write_yaml_file
@@ -34,6 +35,7 @@ app = Flask(__name__)
 
 @app.route('/artifact', defaults={'req_path': 'housing'})
 @app.route('/artifact/<path:req_path>')
+@cross_origin()
 def render_artifact_dir(req_path):
     os.makedirs("housing", exist_ok=True)
     # Joining the base and the requested path
@@ -67,6 +69,7 @@ def render_artifact_dir(req_path):
 
 
 @app.route('/', methods=['GET', 'POST'])
+@cross_origin()
 def index():
     try:
         return render_template('index.html')
@@ -74,6 +77,7 @@ def index():
         return str(e)
 
 @app.route('/train', methods=['GET', 'POST'])
+@cross_origin()
 def train():
     message = ""
     pipeline = Pipeline(config=Configuration(current_time_stamp=CURRENT_TIMESTAMP()))
@@ -90,12 +94,12 @@ def train():
 
 
 @app.route('/predict', methods=['GET', 'POST'])
+@cross_origin()
 def predict():
     context = {
         CREDIT_DATA_KEY: None,
         DEFAULT_PAYMENT_NEXT_MONTH_KEY: None
     }
-    
     if request.method == 'POST':
         ID = float(request.form['ID'])
         LIMIT_BAL = float(request.form['LIMIT_BAL'])
@@ -147,10 +151,11 @@ def predict():
                                         PAY_AMT5 = PAY_AMT5,
                                         PAY_AMT6 = PAY_AMT6
                                         )
-        #default.payment.next.month = default.payment.next.month
+
         creditcard_df = creditcard_data.get_creditcard_input_data_frame()
         creditcard_predictor = CreditcardPredictor(model_dir=MODEL_DIR)
         default_payment_next_month = int(creditcard_predictor.predict(X=creditcard_df)[0])
+
         if (default_payment_next_month==1):
             default_payment_next_month = "Customer is a defaulter"
         else:
@@ -166,6 +171,7 @@ def predict():
 
 @app.route('/saved_models', defaults={'req_path': 'saved_models'})
 @app.route('/saved_models/<path:req_path>')
+@cross_origin()
 def saved_models_dir(req_path):
     os.makedirs("saved_models", exist_ok=True)
     # Joining the base and the requested path
@@ -192,6 +198,7 @@ def saved_models_dir(req_path):
 
 
 @app.route("/update_model_config", methods=['GET', 'POST'])
+@cross_origin()
 def update_model_config():
     try:
         if request.method == 'POST':
@@ -212,6 +219,7 @@ def update_model_config():
 
 @app.route(f'/logs', defaults={'req_path': f'{LOG_FOLDER_NAME}'})
 @app.route(f'/{LOG_FOLDER_NAME}/<path:req_path>')
+@cross_origin()
 def render_log_dir(req_path):
     os.makedirs(LOG_FOLDER_NAME, exist_ok=True)
     # Joining the base and the requested path
