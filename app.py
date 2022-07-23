@@ -1,5 +1,4 @@
 from flask import Flask, request
-from flask_cors import cross_origin,CORS
 import sys
 import pip
 from creditcard.util.util import read_yaml_file, write_yaml_file
@@ -35,7 +34,6 @@ app = Flask(__name__)
 
 @app.route('/artifact', defaults={'req_path': 'housing'})
 @app.route('/artifact/<path:req_path>')
-@cross_origin()
 def render_artifact_dir(req_path):
     os.makedirs("housing", exist_ok=True)
     # Joining the base and the requested path
@@ -69,7 +67,6 @@ def render_artifact_dir(req_path):
 
 
 @app.route('/', methods=['GET', 'POST'])
-@cross_origin()
 def index():
     try:
         return render_template('index.html')
@@ -77,7 +74,6 @@ def index():
         return str(e)
 
 @app.route('/train', methods=['GET', 'POST'])
-@cross_origin()
 def train():
     message = ""
     pipeline = Pipeline(config=Configuration(current_time_stamp=CURRENT_TIMESTAMP()))
@@ -94,7 +90,6 @@ def train():
 
 
 @app.route('/predict', methods=['GET', 'POST'])
-@cross_origin()
 def predict():
     context = {
         CREDIT_DATA_KEY: None,
@@ -171,7 +166,6 @@ def predict():
 
 @app.route('/saved_models', defaults={'req_path': 'saved_models'})
 @app.route('/saved_models/<path:req_path>')
-@cross_origin()
 def saved_models_dir(req_path):
     os.makedirs("saved_models", exist_ok=True)
     # Joining the base and the requested path
@@ -198,7 +192,6 @@ def saved_models_dir(req_path):
 
 
 @app.route("/update_model_config", methods=['GET', 'POST'])
-@cross_origin()
 def update_model_config():
     try:
         if request.method == 'POST':
@@ -219,7 +212,6 @@ def update_model_config():
 
 @app.route(f'/logs', defaults={'req_path': f'{LOG_FOLDER_NAME}'})
 @app.route(f'/{LOG_FOLDER_NAME}/<path:req_path>')
-@cross_origin()
 def render_log_dir(req_path):
     os.makedirs(LOG_FOLDER_NAME, exist_ok=True)
     # Joining the base and the requested path
