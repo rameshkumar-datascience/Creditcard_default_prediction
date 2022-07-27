@@ -3,7 +3,7 @@ from creditcard.logger import logging
 from creditcard.exception import CreditcardException
 from creditcard.entity.config_entity import DataIngestionConfig
 from creditcard.entity.artifact_config import DataIngestionArtifact
-import os
+import os,sys
 from six.moves import urllib
 from  zipfile import ZipFile
 import pandas as pd

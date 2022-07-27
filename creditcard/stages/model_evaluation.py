@@ -65,7 +65,7 @@ class ModelEvaluation:
             }
 
             if previous_best_model is not None:
-                model_history = {self.model_evaluation_config.time_stamp: previous_best_model}
+                model_history = {self.model_evaluation_config.current_time_stamp: previous_best_model}
                 if HISTORY_KEY not in model_eval_content:
                     history = {HISTORY_KEY: model_history}
                     eval_result.update(history)

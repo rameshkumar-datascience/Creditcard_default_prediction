@@ -32,10 +32,11 @@ DEFAULT_PAYMENT_NEXT_MONTH_KEY = "default_payment_next_month"
 app = Flask(__name__)
 
 
-@app.route('/artifact', defaults={'req_path': 'housing'})
+@app.route('/artifact', defaults={'req_path': 'creditcard'})
 @app.route('/artifact/<path:req_path>')
+ 
 def render_artifact_dir(req_path):
-    os.makedirs("housing", exist_ok=True)
+    os.makedirs("creditcard", exist_ok=True)
     # Joining the base and the requested path
     print(f"req_path: {req_path}")
     abs_path = os.path.join(req_path)
@@ -67,6 +68,7 @@ def render_artifact_dir(req_path):
 
 
 @app.route('/', methods=['GET', 'POST'])
+ 
 def index():
     try:
         return render_template('index.html')
@@ -74,9 +76,10 @@ def index():
         return str(e)
 
 @app.route('/train', methods=['GET', 'POST'])
+ 
 def train():
     message = ""
-    pipeline = Pipeline(config=Configuration(current_time_stamp=CURRENT_TIMESTAMP()))
+    pipeline = Pipeline(config=Configuration())
     if not Pipeline.experiment.running_status:
         message = "Training started."
         pipeline.start()
@@ -90,6 +93,7 @@ def train():
 
 
 @app.route('/predict', methods=['GET', 'POST'])
+ 
 def predict():
     context = {
         CREDIT_DATA_KEY: None,
@@ -166,6 +170,7 @@ def predict():
 
 @app.route('/saved_models', defaults={'req_path': 'saved_models'})
 @app.route('/saved_models/<path:req_path>')
+ 
 def saved_models_dir(req_path):
     os.makedirs("saved_models", exist_ok=True)
     # Joining the base and the requested path
@@ -192,6 +197,7 @@ def saved_models_dir(req_path):
 
 
 @app.route("/update_model_config", methods=['GET', 'POST'])
+ 
 def update_model_config():
     try:
         if request.method == 'POST':
@@ -208,10 +214,18 @@ def update_model_config():
     except  Exception as e:
         logging.exception(e)
         return str(e)
-
+        
+@app.route('/view_experiment_hist', methods=['GET', 'POST'])
+def view_experiment_history():
+    experiment_df = Pipeline.get_experiments_status()
+    context = {
+        "experiment": experiment_df.to_html(classes='table table-striped col-12')
+    }
+    return render_template('experiment_history.html', context=context)
 
 @app.route(f'/logs', defaults={'req_path': f'{LOG_FOLDER_NAME}'})
 @app.route(f'/{LOG_FOLDER_NAME}/<path:req_path>')
+ 
 def render_log_dir(req_path):
     os.makedirs(LOG_FOLDER_NAME, exist_ok=True)
     # Joining the base and the requested path

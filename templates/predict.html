@@ -2,6 +2,7 @@
 
 {% block head %}
 <title>Creditcard defaulters Estimator</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/predict.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -9,7 +10,7 @@
 <div class="row">
     <div class="col-md-6 col-sm-12 col-xs-6 col-lg-6">
         <form action="/predict" method="post">
-            <legend>Creditcard defaulters form</legend>
+            <h2><legend>Creditcard defaulters form</legend></h2>
             <div class="mb-3">
                 <label class="form-label">ID</label>
                 <input class="form-control" type="text" name="ID" placeholder="Enter a value of ID"
@@ -131,55 +132,32 @@
                     placeholder="Enter a value of PAY_AMT6" required />
             </div>
             <div class="mb-3">
-
                 <input class="btn btn-primary" type="submit" value="Predict customer is defaulter or not" required />
             </div>
         </form>
     </div>
 
     <div class="col-md-6 col-sm-12 col-xs-6 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-              Creditcard defaulters form
-            </div>
-            <div class="card-body">
-        {% if context['creditcard_data'] is not none %}
-        <table class="table table-striped">
-            <caption>Creditcard defaulters Prediction </caption>
-            <tr>
-                <th>Input Feature</th>
-                <th>Feature Value</th>
-
-            </tr>
-            {% for column,value in context['creditcard_data'].items() %}
-
-
-
-            <tr>
-                <td>{{column}}</td>
-                <td>{{value[0]}}</td>
-            </tr>
-
-            {% endfor %}
-            <tr>
-
-                <td>default_payment_next_month </td>
-                <td>
-                    {{ context['default_payment_next_month'] }}
-                </td>
-            </tr>
-        </table>
-        {% else %}
-
-              <h5 class="card-title">Submit Form</h5>
-              <p class="card-text">Kindly provide necessary information to estimate housing price in california</p>
-
-
-
-        {% endif %}
-        Go to <a href="/" class="btn btn-primary">Home</a>
-    </div>
-</div>
+                {% if context['creditcard_data'] is not none %}
+                <table class="table table-striped">
+                    <tr>
+                        <th>Input Feature</th>
+                        <th>Feature Value</th>
+                    </tr>
+                    {% for column,value in context['creditcard_data'].items() %}
+                    <tr>
+                        <td>{{column}}</td>
+                        <td>{{value[0]}}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>default_payment_next_month </td>
+                        <td>
+                            {{ context['default_payment_next_month'] }}
+                        </td>
+                    </tr>
+                </table>
+                {% endif %}
     </div>
 
     {% endblock %}

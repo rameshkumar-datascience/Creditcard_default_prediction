@@ -1,4 +1,4 @@
-import sys
+import sys,os
 from creditcard.logger import logging
 from creditcard.exception import CreditcardException
 from creditcard.config.configuration import Configuration
@@ -11,14 +11,29 @@ from creditcard.stages.model_pusher import ModelPusher
 from creditcard.entity.config_entity import DataIngestionConfig, DataValidationConfig,DataTransformationConfig
 from creditcard.entity.artifact_config import DataIngestionArtifact,DataValidationArtifact, \
 DataTransformationArtifact, ModelTrainerArtifact, ModelEvaluationArtifact, ModelPusherArtifact
+from creditcard.contants import EXPERIMENT_DIR_NAME, EXPERIMENT_FILE_NAME
+from threading import Thread
+from multiprocessing import Process
+from datetime import datetime
+import uuid
+import pandas as pd
+from collections import namedtuple
 
 
+Experiment = namedtuple("Experiment", ["experiment_id", "initialization_timestamp", "artifact_time_stamp",
+                                       "running_status", "start_time", "stop_time", "execution_time", "message",
+                                       "experiment_file_path", "accuracy", "is_model_accepted"])
 
 
-
-class Pipeline():
+class Pipeline(Thread):
+    experiment: Experiment = Experiment(*([None] * 11))
+    experiment_file_path = None
     def __init__(self,config:Configuration) -> None:
         try:
+            os.makedirs(config.training_pipeline_config.artifact_dir, exist_ok=True)
+            Pipeline.experiment_file_path=os.path.join(config.training_pipeline_config.artifact_dir,EXPERIMENT_DIR_NAME, EXPERIMENT_FILE_NAME)
+            super().__init__(daemon=False, name="pipeline")
+
             self.config=config
         except Exception as e:
             raise CreditcardException(e,sys) from e
@@ -90,6 +105,31 @@ class Pipeline():
     #----------------------All in one function--------------------------#
     def run_pipeline(self):
         try:
+            if Pipeline.experiment.running_status:
+                logging.info("Pipeline is already running")
+                return Pipeline.experiment
+            logging.info("Pipeline starting.")
+
+            experiment_id = str(uuid.uuid4())
+
+            Pipeline.experiment = Experiment(experiment_id=experiment_id,
+                                             initialization_timestamp=self.config.current_time_stamp,
+                                             artifact_time_stamp=self.config.current_time_stamp,
+                                             running_status=True,
+                                             start_time=datetime.now(),
+                                             stop_time=None,
+                                             execution_time=None,
+                                             experiment_file_path=Pipeline.experiment_file_path,
+                                             is_model_accepted=None,
+                                             message="Pipeline has been started.",
+                                             accuracy=None,
+                                             )
+            logging.info(f"Pipeline experiment: {Pipeline.experiment}")
+
+            #saving experiment details
+            self.save_experiment()
+
+
             data_ingestion_artifact = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             data_transformation_artifact = self.start_data_transformation(data_ingestion_artifact=data_ingestion_artifact,
@@ -109,3 +149,44 @@ class Pipeline():
         
         except Exception as e:
             raise CreditcardException(e,sys) from e
+
+    def run(self):
+        try:
+            self.run_pipeline()
+        except Exception as e:
+            raise CreditcardException(e,sys) from e
+
+    def save_experiment(self):
+        try:
+            if Pipeline.experiment.experiment_id is not None:
+                experiment = Pipeline.experiment
+                experiment_dict = experiment._asdict()
+                experiment_dict: dict = {key: [value] for key, value in experiment_dict.items()}
+
+                experiment_dict.update({
+                    "created_time_stamp": [datetime.now()],
+                    "experiment_file_path": [os.path.basename(Pipeline.experiment.experiment_file_path)]})
+
+                experiment_report = pd.DataFrame(experiment_dict)
+
+                os.makedirs(os.path.dirname(Pipeline.experiment_file_path), exist_ok=True)
+                if os.path.exists(Pipeline.experiment_file_path):
+                    experiment_report.to_csv(Pipeline.experiment_file_path, index=False, header=False, mode="a")
+                else:
+                    experiment_report.to_csv(Pipeline.experiment_file_path, mode="w", index=False, header=True)
+            else:
+                print("First start experiment")
+        except Exception as e:
+            raise CreditcardException(e, sys) from e
+
+    @classmethod
+    def get_experiments_status(cls, limit: int = 5) -> pd.DataFrame:
+        try:
+            if os.path.exists(Pipeline.experiment_file_path):
+                df = pd.read_csv(Pipeline.experiment_file_path)
+                limit = -1 * int(limit)
+                return df[limit:].drop(columns=["experiment_file_path", "initialization_timestamp"], axis=1)
+            else:
+                return pd.DataFrame()
+        except Exception as e:
+            raise CreditcardException(e, sys) from e

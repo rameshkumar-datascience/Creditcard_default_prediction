@@ -33,11 +33,11 @@ DEFAULT_PAYMENT_NEXT_MONTH_KEY = "default_payment_next_month"
 app = Flask(__name__)
 
 
-@app.route('/artifact', defaults={'req_path': 'housing'})
+@app.route('/artifact', defaults={'req_path': 'creditcard'})
 @app.route('/artifact/<path:req_path>')
 @cross_origin()
 def render_artifact_dir(req_path):
-    os.makedirs("housing", exist_ok=True)
+    os.makedirs("creditcard", exist_ok=True)
     # Joining the base and the requested path
     print(f"req_path: {req_path}")
     abs_path = os.path.join(req_path)
@@ -80,7 +80,7 @@ def index():
 @cross_origin()
 def train():
     message = ""
-    pipeline = Pipeline(config=Configuration(current_time_stamp=CURRENT_TIMESTAMP()))
+    pipeline = Pipeline(config=Configuration())
     if not Pipeline.experiment.running_status:
         message = "Training started."
         pipeline.start()
@@ -215,7 +215,14 @@ def update_model_config():
     except  Exception as e:
         logging.exception(e)
         return str(e)
-
+        
+@app.route('/view_experiment_hist', methods=['GET', 'POST'])
+def view_experiment_history():
+    experiment_df = Pipeline.get_experiments_status()
+    context = {
+        "experiment": experiment_df.to_html(classes='table table-striped col-12')
+    }
+    return render_template('experiment_history.html', context=context)
 
 @app.route(f'/logs', defaults={'req_path': f'{LOG_FOLDER_NAME}'})
 @app.route(f'/{LOG_FOLDER_NAME}/<path:req_path>')

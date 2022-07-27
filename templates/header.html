@@ -75,6 +75,9 @@ table-layout: fixed;
                     <li class="nav-item">
                         <a class="nav-link {% if 'predict' in request.path %} active {% endif %}" href="/predict">Predict Creditcard defaulter</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'predict' in request.path %} active {% endif %}" href="/view_experiment_hist">Experiment History</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -91,19 +94,7 @@ table-layout: fixed;
 
     </div>
 
-    <!-- footer goes here-->
 
-
-
-
-    <footer class="text-center text-white " style="background-color: #d4d2d2;">
-        <!-- Copyright -->
-        <div class="text-center text-light p-3" style="background-color: rgba(3, 36, 67, 0.504);">
-            © 2022 Copyright:
-            <a class="text-light" href="https://ineuron.ai/">iNeuron Intelligence Pvt Limited</a>
-        </div>
-        <!-- Copyright -->
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"

@@ -1,3 +1,10 @@
 best_model:
   model_path: C:\Users\Ramesh Kumar\Jupter Home\INeuron\Machine Learning\End to End
-    projects\Creditcard_default_prediction\creditcard\artifact\model_trainer\22-07-2022_23-32-21\trained_model\model.pkl
+    projects\Creditcard_default_prediction\creditcard\artifact\model_trainer\27-07-2022_17-08-39\trained_model\model.pkl
+history:
+  27-07-2022_16-22-44:
+    model_path: C:\Users\Ramesh Kumar\Jupter Home\INeuron\Machine Learning\End to
+      End projects\Creditcard_default_prediction\creditcard\artifact\model_trainer\22-07-2022_23-32-21\trained_model\model.pkl
+  27-07-2022_17-08-39:
+    model_path: C:\Users\Ramesh Kumar\Jupter Home\INeuron\Machine Learning\End to
+      End projects\Creditcard_default_prediction\creditcard\artifact\model_trainer\27-07-2022_16-22-44\trained_model\model.pkl
