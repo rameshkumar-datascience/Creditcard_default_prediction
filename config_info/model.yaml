@@ -10,15 +10,20 @@ model_selection:
     module: sklearn.linear_model
     params:
       penalty: l2
-      C: 1.0
+      C: 0
       fit_intercept: true
     search_param_grid:
       C:
-      - 5.0
-      - 7.0
+      - 0.2
+      - 0.3
+      - 0.5
+      - 0.7
+      - 1
+      - 2
+      - 3
+      - 7
       - 10
       - 20
-      - 40
       fit_intercept:
       - true
       - false
@@ -27,24 +32,30 @@ model_selection:
     module: sklearn.tree
     params:
       criterion: entropy
-      min_samples_leaf: 3
+      min_samples_leaf: 1
     search_param_grid:
       min_samples_leaf:
-      - 6
-      - 8
-      - 9
+      - 2
+      - 3
+      - 4
       criterion:
       - 'gini'
   module_2:
     class: RandomForestClassifier
     module: sklearn.ensemble
     params:
+      n_estimators: 100
       criterion: entropy
-      min_samples_leaf: 3
+      min_samples_leaf: 1
     search_param_grid:
-      min_samples_leaf:
-      - 6
-      - 8
-      - 9
+      n_estimators:
+      - 120
+      - 150
+      - 200
+      - 250
       criterion:
       - 'gini'
+      min_samples_leaf:
+      - 2
+      - 3
+      - 4

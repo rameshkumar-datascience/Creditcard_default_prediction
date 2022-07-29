@@ -10,7 +10,7 @@ from collections import namedtuple
 from typing import List
 from creditcard.logger import logging
 from sklearn.metrics import r2_score,mean_squared_error
-from sklearn.metrics import fbeta_score,f1_score
+from sklearn.metrics import f1_score,accuracy_score
 
 
 
@@ -43,7 +43,7 @@ MetricInfoArtifact = namedtuple("MetricInfoArtifact",
 
 
 
-def evaluate_classification_model(model_list: list, X_train:np.ndarray, y_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, base_accuracy:float=0.5)->MetricInfoArtifact:
+def evaluate_classification_model(model_list: list, X_train:np.ndarray, y_train:np.ndarray, X_test:np.ndarray, y_test:np.ndarray, base_accuracy:float=0.6)->MetricInfoArtifact:
     """
     Description:
     This function compare multiple regression model return best model
@@ -72,11 +72,11 @@ def evaluate_classification_model(model_list: list, X_train:np.ndarray, y_train:
             y_test_pred = model.predict(X_test)
 
             #Calculating r squared score on training and testing dataset
-            train_acc = f1_score(y_train, y_train_pred)
-            test_acc = f1_score(y_test, y_test_pred)
+            train_acc = accuracy_score(y_train, y_train_pred)
+            test_acc = accuracy_score(y_test, y_test_pred)
             
             # Calculating harmonic mean of train_accuracy and test_accuracy
-            model_accuracy = (2 * (train_acc * test_acc)) / (train_acc + test_acc)
+            model_accuracy = (train_acc + test_acc)/2
             diff_test_train_acc = abs(test_acc - train_acc)
             
             #logging all important metric
@@ -89,7 +89,7 @@ def evaluate_classification_model(model_list: list, X_train:np.ndarray, y_train:
 
             #if model accuracy is greater than base accuracy and train and test score is within certain thershold
             #we will accept that model as accepted model
-            if model_accuracy >= base_accuracy and diff_test_train_acc < 0.2:
+            if model_accuracy >= base_accuracy and diff_test_train_acc < 0.05:
                 base_accuracy = model_accuracy
                 metric_info_artifact = MetricInfoArtifact(model_name=model_name,
                                                         model_object=model,

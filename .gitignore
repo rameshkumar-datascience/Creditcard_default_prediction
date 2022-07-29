@@ -112,6 +112,11 @@ venv.bak/
 .creditcard_venv
 creditcard_venv/
 
+saved_models/
+.saved_models
+vscode/
+.vscode
+
 # Spyder project settings
 .spyderproject
 .spyproject
